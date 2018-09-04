@@ -17,6 +17,7 @@ jobs:
           SELENIUM_DRIVER_URL: http://localhost:4444/wd/hub
       - image: circleci/postgres:9.4.12-alpine
       - image: selenium/standalone-chrome:3.14.0
+      - image: rossta/localhost-dnsmasq:v1
 
     steps:
       - checkout
@@ -37,7 +38,7 @@ jobs:
       - run:
           name: Start dnsmasq
           command: |
-            docker run --privileged --dns=127.0.0.1 --name=dnsmasq --cap-add=NET_ADMIN --net=host -v rossta/dnsmasq-localhost
+            docker run --privileged --dns 127.0.0.1 --name dnsmasq --cap-add=NET_ADMIN --net=host -v rossta/dnsmasq-localhost
 
       # Bundle
       - run:
