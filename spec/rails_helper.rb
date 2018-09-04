@@ -90,8 +90,8 @@ Capybara.register_driver(:headless_firefox) do |app|
   )
 end
 
-key_file_path = Rails.root.join("config", "ssl", "system-test-demo.test.key")
-cert_file_path = Rails.root.join("config", "ssl", "system-test-demo.test.crt")
+key_file_path = Rails.root.join("config", "ssl", "localhost.ross.key")
+cert_file_path = Rails.root.join("config", "ssl", "localhost.ross.crt")
 
 Capybara.server = :puma, {
   Host: "ssl://#{Capybara.server_host}?key=#{key_file_path}&cert=#{cert_file_path}",
