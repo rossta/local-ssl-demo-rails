@@ -43,10 +43,12 @@ jobs:
           version: 17.05.0-ce
           docker_layer_caching: true
 
-      - run:
-          name: Start dnsmasq
-          command: |
-            docker run --privileged --dns 127.0.0.1 --name dnsmasq --cap-add=NET_ADMIN --net=host rossta/dnsmasq-localhost:1.0.1
+    #   - run:
+    #       name: Start dnsmasq
+    #       command: |
+    #         docker run --privileged --dns 127.0.0.1 --name dnsmasq --cap-add=NET_ADMIN --net=host rossta/dnsmasq-localhost:1.0.1
+
+      - run: echo 127.0.0.1 subdomain.localhost.ross | sudo tee -a /etc/hosts
 
       # Bundle
       - run:
