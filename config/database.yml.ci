@@ -1,0 +1,9 @@
+---
+test:
+  host: localhost
+  username: root
+  database: circle_test
+  adapter: postgresql
+  encoding: unicode
+  min_messages: WARNING
+  pool: 10
