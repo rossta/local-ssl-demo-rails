@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Start dnsmasq
           command: |
-            docker run --privileged --dns 127.0.0.1 --name dnsmasq --cap-add=NET_ADMIN --net=host rossta/dnsmasq-localhost:v1
+            docker run --privileged --dns 127.0.0.1 --name dnsmasq --cap-add=NET_ADMIN --net=host rossta/dnsmasq-localhost:1.0.1
 
       # Bundle
       - run:
