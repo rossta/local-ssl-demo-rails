@@ -83,6 +83,7 @@ jobs:
 
       - run: bundle --path vendor/bundle
       - run: mv config/database.yml.ci config/database.yml
+      - run: ./script/generate-ssl-certificate.sh localhost.ross
       - run: bin/rake db:create db:schema:load db:migrate --trace
 
       - run:
