@@ -1,0 +1,90 @@
+version: 2
+defaults: &defaults
+jobs:
+  build:
+    working_directory: ~/app
+    parallelism: 1
+    # CircleCI 2.0 does not support environment variables that refer to each other the same way as 1.0 did.
+    # If any of these refer to each other, rewrite them so that they don't or see https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables .
+    environment:
+        RACK_ENV: test
+        RAILS_ENV: test
+        NODE_ENV: test
+
+    docker:
+      - image: circleci/ruby:2.4.2-node-browsers
+        environment:
+          SELENIUM_DRIVER_URL: http://localhost:4444/wd/hub
+      - image: circleci/postgres:9.4.12-alpine
+      - image: selenium/standalone-chrome:3.14.0
+
+    steps:
+      - checkout
+
+      - run: #STABLE
+          name: Install Chromedriver latest version
+          command: |
+            sudo apt-get update
+            sudo apt-get install lsb-release libappindicator3-1
+            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo dpkg -i google-chrome.deb
+            sudo sed -i 's|HERE/chrome"|HERE/chrome" --no-sandbox|g' /opt/google/chrome/google-chrome
+            rm google-chrome.deb
+
+      - run: echo 127.0.0.1 localhost.ross subdomain.localhost.ross | sudo tee -a /etc/hosts
+
+      # Bundle
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - restore_cache:
+          keys:
+          - app-bundle-v1-{{ checksum "Gemfile.lock" }}
+          - app-bundle-v1-
+      - run: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      - save_cache:
+          key: app-bundle-v1-{{ checksum "Gemfile.lock" }}
+          paths: vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths: vendor/bundle
+
+      # Yarn
+      - run:
+          name: Which node?
+          command: node -v
+      - run:
+          name: Which yarn?
+          command: yarn -v
+      - restore_cache:
+          keys:
+          - app-yarn-v1-{{ checksum "yarn.lock" }}
+          - app-yarn-v1-
+      - run: yarn install
+      - save_cache:
+          key: app-yarn-v1-{{ checksum "yarn.lock" }}
+          paths:
+          - node_modules
+      - persist_to_workspace:
+          root: .
+          paths: node_modules
+
+      - run: mkdir -p /tmp/circleci-artifacts /tmp/circleci-test-results
+
+      - run:
+          name: Wait for postgres
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - run: bundle --path vendor/bundle
+      - run: mv config/database.yml.ci config/database.yml
+      - run: ./script/generate-ssl-certificate.sh localhost.ross
+      - run: bin/rake db:create db:schema:load db:migrate --trace
+
+      - run:
+          name: Run rspec
+          command: DEBUG=1 bundle exec rspec
+
+      - store_test_results:
+          path: /tmp/circleci-test-results
+      - store_artifacts:
+          path: /tmp/circleci-artifacts
