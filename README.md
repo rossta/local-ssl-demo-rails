@@ -2,6 +2,8 @@
 
 This Rails application is a simple demo for getting SSL running for local development and test environments.
 
+![Local SSL Demo](./local-ssl-demo.png)
+
 ## Requirements
 
 Below is a list of binaries and gems with the versions used in this demo. It may be possible to make this work with other relatively recent versions of these tools, though your mileage may vary.
