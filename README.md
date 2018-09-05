@@ -1,7 +1,9 @@
 [![CircleCI](https://circleci.com/gh/rossta/local-ssl-demo-rails.svg?style=svg)](https://circleci.com/gh/rossta/local-ssl-demo-rails)
 # Local SSL Demo for Rails
 
-This Rails 5 application is a simple demo for getting SSL running for local development and test environments.
+This Rails 5 application is a simple demo for getting SSL running for local development and test environments. 
+
+[Blog post](https://rossta.net/blog/local-ssl-for-rails-5.html)
 
 ![Local SSL Demo](./local-ssl-demo.png)
 
